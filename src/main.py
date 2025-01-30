@@ -128,7 +128,7 @@ async def create_room_and_token() -> tuple[str, str]:
     return room.url, token
 
 
-@app.get("/")
+@app.get("/room")
 async def start_agent(request: Request):
     """Endpoint for direct browser access to the bot.
 
@@ -242,7 +242,7 @@ if os.path.exists("src/ui/dist"):
     print("Serving React app")
     app.mount("/assets", StaticFiles(directory=static_dir), name="static")
 
-    @app.get("/ui")
+    @app.get("/")
     async def serve_root():
         return FileResponse(html_file)
 
