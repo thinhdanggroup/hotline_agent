@@ -9,6 +9,9 @@ start:
 start-dev:
 	@poetry run uvicorn src.main:app --reload --port 5000
 
+start-render:
+	@poetry run uvicorn src.main:app --host 0.0.0.0 --port $PORT
+
 build:
 	@cd src/ui && npm run build
 
