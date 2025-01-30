@@ -2,9 +2,12 @@
 
 start:
 	@echo "Starting FastAPI application..."
-	@poetry run uvicorn src.hotline_agent.main:app --reload --port 8000 > app.log 2>&1 & echo $$! > app.pid
+	@poetry run uvicorn src.main:app --reload --port 8080 > app.log 2>&1 & echo $$! > app.pid
 	@echo "Application started on http://localhost:8000"
 	@echo "PID: $$(cat app.pid)"
+
+start-dev:
+	@poetry run uvicorn src.main:app --reload --port 8080
 
 stop:
 	@if [ -f app.pid ]; then \
