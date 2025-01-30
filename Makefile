@@ -1,4 +1,4 @@
-.PHONY: start stop install clean
+.PHONY: start stop install clean export-requirements
 
 start:
 	@echo "Starting FastAPI application..."
@@ -34,5 +34,9 @@ clean:
 	@find . -type d -name "__pycache__" -exec rm -rf {} +
 	@rm -f app.pid app.log
 	@echo "Cleanup complete"
+
+export-requirements:
+	@echo "Exporting dependencies to requirements.txt..."
+	@poetry export -f requirements.txt --output requirements.txt --without-hashes --with-credentials --with dev
 
 .DEFAULT_GOAL := start
