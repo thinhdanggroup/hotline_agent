@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "hotline-agent"
+version = "0.1.0"
+description = "FastAPI application for hotline agent"
+authors = ["Thinh Dang <thinh.dang2@tpptechnology.com>"]
+packages = [{include = "hotline_agent", from = "src"}]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = "^0.115.7"
+uvicorn = {extras = ["standard"], version = "^0.34.0"}
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3.4"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
