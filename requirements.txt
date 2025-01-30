@@ -1,7 +1,8 @@
-fastapi==0.109.0
-uvicorn==0.27.0
-python-dotenv==1.0.0
+fastapi==0.115.7
+uvicorn[standard]==0.34.0
+python-dotenv==1.0.1
 pydantic==2.5.3
 pydantic-settings==2.1.0
-aiohttp
-pipecat
+aiohttp==3.11.11
+pipecat==0.3.0
+pipecat-ai[daily,elevenlabs,google,openai,silero]==0.0.54
