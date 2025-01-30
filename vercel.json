@@ -9,21 +9,14 @@
       "src": "src/ui/package.json",
       "use": "@vercel/static-build",
       "config": {
-        "distDir": "dist"
+        "distDir": "dist",
+        "buildCommand": "npm run build"
       }
     }
   ],
   "routes": [
     {
-      "src": "/room",
-      "dest": "src/vercel.py"
-    },
-    {
-      "src": "/connect",
-      "dest": "src/vercel.py"
-    },
-    {
-      "src": "/status/(.*)",
+      "src": "/room|/connect|/status/.*",
       "dest": "src/vercel.py"
     },
     {
@@ -31,8 +24,11 @@
       "dest": "src/ui/dist/assets/$1"
     },
     {
+      "handle": "filesystem"
+    },
+    {
       "src": "/(.*)",
-      "dest": "src/ui/dist/index.html"
+      "dest": "src/vercel.py"
     }
   ],
   "env": {
