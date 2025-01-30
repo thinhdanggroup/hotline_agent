@@ -10,6 +10,12 @@ from fastapi.responses import FileResponse
 # Load environment variables
 load_dotenv()
 
+import sys
+from pathlib import Path
+
+# Add the src directory to Python path
+sys.path.append(str(Path(__file__).parent))
+
 # Import the main FastAPI app
 from main import app as main_app
 

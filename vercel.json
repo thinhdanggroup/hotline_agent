@@ -3,7 +3,11 @@
   "builds": [
     {
       "src": "src/vercel.py",
-      "use": "@vercel/python"
+      "use": "@vercel/python",
+      "config": {
+        "maxLambdaSize": "15mb",
+        "runtime": "python3.11"
+      }
     },
     {
       "src": "src/ui/package.json",
@@ -17,21 +21,22 @@
   "routes": [
     {
       "src": "/room|/connect|/status/.*",
-      "dest": "src/vercel.py"
+      "dest": "/src/vercel.py"
     },
     {
       "src": "/assets/(.*)",
-      "dest": "src/ui/dist/assets/$1"
+      "dest": "/src/ui/dist/assets/$1"
     },
     {
       "handle": "filesystem"
     },
     {
       "src": "/(.*)",
-      "dest": "src/vercel.py"
+      "dest": "/src/vercel.py"
     }
   ],
   "env": {
-    "PYTHON_VERSION": "3.11"
+    "PYTHON_VERSION": "3.11",
+    "PYTHONPATH": "src"
   }
 }
