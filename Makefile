@@ -7,7 +7,7 @@ start:
 	@echo "PID: $$(cat app.pid)"
 
 start-dev:
-	@poetry run uvicorn src.main:app --reload --port 8080
+	@poetry run uvicorn src.main:app --reload --port 5000
 
 stop:
 	@if [ -f app.pid ]; then \
