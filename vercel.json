@@ -2,7 +2,7 @@
   "version": 2,
   "builds": [
     {
-      "src": "src/server.py",
+      "src": "src/vercel.py",
       "use": "@vercel/python"
     },
     {
@@ -15,12 +15,24 @@
   ],
   "routes": [
     {
-      "src": "/api/(.*)",
-      "dest": "src/server.py"
+      "src": "/room",
+      "dest": "src/vercel.py"
+    },
+    {
+      "src": "/connect",
+      "dest": "src/vercel.py"
+    },
+    {
+      "src": "/status/(.*)",
+      "dest": "src/vercel.py"
+    },
+    {
+      "src": "/assets/(.*)",
+      "dest": "src/ui/dist/assets/$1"
     },
     {
       "src": "/(.*)",
-      "dest": "src/ui/dist/$1"
+      "dest": "src/ui/dist/index.html"
     }
   ],
   "env": {
