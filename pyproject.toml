@@ -2,8 +2,8 @@
 name = "hotline-agent"
 version = "0.1.0"
 description = "FastAPI application for hotline agent"
-authors = ["Thinh Dang <thinh.dang2@tpptechnology.com>"]
-packages = [{include = "hotline_agent", from = "src"}]
+authors = ["Thinh Dang <thinhdang206@gmail.com>"]
+packages = [{include = "src"}]
 readme = "README.md"
 
 [tool.poetry.dependencies]

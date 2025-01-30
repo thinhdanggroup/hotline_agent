@@ -9,6 +9,9 @@ start:
 start-dev:
 	@poetry run uvicorn src.main:app --reload --port 5000
 
+build:
+	@cd src/ui && npm run build
+
 stop:
 	@if [ -f app.pid ]; then \
 		echo "Stopping FastAPI application..."; \
