@@ -36,7 +36,11 @@ clean:
 	@echo "Cleanup complete"
 
 export-requirements:
-	@echo "Exporting dependencies to requirements.txt..."
+	@echo "Exporting all dependencies to requirements.txt..."
 	@poetry export -f requirements.txt --output requirements.txt --without-hashes --with-credentials --with dev
+
+export-vercel:
+	@echo "Exporting minimal dependencies for Vercel deployment..."
+	@echo "fastapi==0.115.7\nuvicorn[standard]==0.34.0\npython-dotenv==1.0.1\npydantic==2.10.6\naiohttp==3.11.11\ndaily-python==0.14.2\nopenai==1.59.9\ngoogle-generativeai==0.8.4" > requirements.txt
 
 .DEFAULT_GOAL := start

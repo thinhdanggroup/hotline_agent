@@ -1,11 +1,17 @@
 {
   "version": 2,
+  "functions": {
+    "src/vercel.py": {
+      "runtime": "@vercel/python@3.1.0",
+      "memory": 1024,
+      "maxDuration": 10
+    }
+  },
   "builds": [
     {
       "src": "src/vercel.py",
       "use": "@vercel/python",
       "config": {
-        "maxLambdaSize": "15mb",
         "runtime": "python3.11",
         "installCommand": "pip install -r requirements.txt"
       }
@@ -22,11 +28,20 @@
   "routes": [
     {
       "src": "/room|/connect|/status/.*",
-      "dest": "/src/vercel.py"
+      "dest": "/src/vercel.py",
+      "methods": ["GET", "POST"],
+      "headers": {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type"
+      }
     },
     {
       "src": "/assets/(.*)",
-      "dest": "/src/ui/dist/assets/$1"
+      "dest": "/src/ui/dist/assets/$1",
+      "headers": {
+        "cache-control": "public, max-age=31536000, immutable"
+      }
     },
     {
       "handle": "filesystem"
@@ -38,7 +53,6 @@
   ],
   "env": {
     "PYTHON_VERSION": "3.11",
-    "PYTHONPATH": "src",
-    "PIP_TARGET": ".pip"
+    "PYTHONPATH": "src"
   }
 }
