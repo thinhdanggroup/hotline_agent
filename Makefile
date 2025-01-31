@@ -7,7 +7,7 @@ start:
 	@echo "PID: $$(cat app.pid)"
 
 start-dev:
-	@poetry run uvicorn src.main:app --reload --port 5000
+	@PORT=8080 VITE_API_URL=http://localhost:8080 ./script/run.sh
 
 start-render:
 	@poetry run uvicorn src.main:app --host 0.0.0.0 --port $PORT
@@ -34,6 +34,12 @@ clean:
 	@find . -type d -name "__pycache__" -exec rm -rf {} +
 	@rm -f app.pid app.log
 	@echo "Cleanup complete"
+
+docker-up:
+	@docker compose up --build
+
+docker-down:
+	@docker compose down
 
 export-requirements:
 	@echo "Exporting all dependencies to requirements.txt..."

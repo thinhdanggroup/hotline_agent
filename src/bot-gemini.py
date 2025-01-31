@@ -42,7 +42,9 @@ from pipecat.pipeline.task import PipelineParams, PipelineTask
 from pipecat.processors.aggregators.openai_llm_context import OpenAILLMContext
 from pipecat.processors.frame_processor import FrameDirection, FrameProcessor
 from pipecat.processors.frameworks.rtvi import RTVIConfig, RTVIProcessor
-from pipecat.services.gemini_multimodal_live.gemini import GeminiMultimodalLiveLLMService
+from pipecat.services.gemini_multimodal_live.gemini import (
+    GeminiMultimodalLiveLLMService,
+)
 from pipecat.transports.services.daily import DailyParams, DailyTransport
 
 load_dotenv(override=True)
@@ -59,7 +61,9 @@ for i in range(1, 26):
     # Get the filename without the extension to use as the dictionary key
     # Open the image and convert it to bytes
     with Image.open(full_path) as img:
-        sprites.append(OutputImageRawFrame(image=img.tobytes(), size=img.size, format=img.format))
+        sprites.append(
+            OutputImageRawFrame(image=img.tobytes(), size=img.size, format=img.format)
+        )
 
 # Create a smooth animation by adding reversed frames
 flipped = sprites[::-1]
@@ -67,7 +71,9 @@ sprites.extend(flipped)
 
 # Define static and animated states
 quiet_frame = sprites[0]  # Static frame for when bot is listening
-talking_frame = SpriteFrame(images=sprites)  # Animation sequence for when bot is talking
+talking_frame = SpriteFrame(
+    images=sprites
+)  # Animation sequence for when bot is talking
 
 
 class TalkingAnimation(FrameProcessor):
@@ -125,9 +131,11 @@ async def main():
                 audio_in_sample_rate=16000,
                 audio_out_sample_rate=24000,
                 audio_out_enabled=True,
-                camera_out_enabled=True,
-                camera_out_width=1024,
-                camera_out_height=576,
+                camera_out_enabled=False,
+                # Disable camera output for performance issue
+                # camera_out_enabled=True,
+                # camera_out_width=1024,
+                # camera_out_height=576,
                 vad_enabled=True,
                 vad_audio_passthrough=True,
                 vad_analyzer=SileroVADAnalyzer(params=VADParams(stop_secs=0.5)),
@@ -167,7 +175,7 @@ async def main():
                 rtvi,
                 context_aggregator.user(),
                 llm,
-                ta,
+                # ta,
                 transport.output(),
                 context_aggregator.assistant(),
             ]
