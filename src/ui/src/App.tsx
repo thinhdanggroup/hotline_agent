@@ -2,25 +2,25 @@ import {
   RTVIClientAudio,
   RTVIClientVideo,
   useRTVIClientTransportState,
-} from '@pipecat-ai/client-react';
-import { RTVIProvider } from './providers/RTVIProvider';
-import { ConnectButton } from './components/ConnectButton';
-import { StatusDisplay } from './components/StatusDisplay';
-import { DebugDisplay } from './components/DebugDisplay';
-import './App.css';
+} from "@pipecat-ai/client-react";
+import { RTVIProvider } from "./providers/RTVIProvider";
+import { ConnectButton } from "./components/ConnectButton";
+import { StatusDisplay } from "./components/StatusDisplay";
+import { DebugDisplay } from "./components/DebugDisplay";
+import "./App.css";
 
-function BotVideo() {
-  const transportState = useRTVIClientTransportState();
-  const isConnected = transportState !== 'disconnected';
+// function BotVideo() {
+//   const transportState = useRTVIClientTransportState();
+//   const isConnected = transportState !== 'disconnected';
 
-  return (
-    <div className="bot-container">
-      <div className="video-container">
-        {isConnected && <RTVIClientVideo participant="bot" fit="cover" />}
-      </div>
-    </div>
-  );
-}
+//   return (
+//     <div className="bot-container">
+//       <div className="video-container">
+//         {isConnected && <RTVIClientVideo participant="bot" fit="cover" />}
+//       </div>
+//     </div>
+//   );
+// }
 
 function AppContent() {
   return (
@@ -30,9 +30,15 @@ function AppContent() {
         <ConnectButton />
       </div>
 
-      <div className="main-content">
-        <BotVideo />
+      <div className="debug-panel">
+        <p>
+          Due to CPU resource limitations, only audio is enabled and video is
+          disabled on this page.
+        </p>
       </div>
+      {/* <div className="main-content">
+        <BotVideo />
+      </div> */}
 
       <DebugDisplay />
       <RTVIClientAudio />

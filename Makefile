@@ -41,6 +41,9 @@ docker-up:
 docker-down:
 	@docker compose down
 
+clean-rooms:
+	@python script/delete-rooms/app.py
+
 export-requirements:
 	@echo "Exporting all dependencies to requirements.txt..."
 	@poetry export -f requirements.txt --output requirements.txt --without-hashes --with-credentials --with dev

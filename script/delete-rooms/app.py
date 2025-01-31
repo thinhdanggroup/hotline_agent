@@ -69,10 +69,4 @@ if __name__ == "__main__":
     for idx, room in enumerate(rooms, 1):
         print(f"{idx}. {room['name']}")
     
-    # Confirm deletion
-    confirm = input("\nAre you sure you want to delete ALL these rooms? (y/n): ").strip().lower()
-    if confirm == 'y':
-        delete_all_rooms()
-        print("\nAll rooms have been processed.")
-    else:
-        print("Operation cancelled.")
+    delete_all_rooms()
