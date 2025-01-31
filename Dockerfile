@@ -15,14 +15,18 @@ RUN curl -sSL https://install.python-poetry.org | python3 - \
 
 # Copy Poetry files
 COPY pyproject.toml poetry.lock ./
-RUN poetry install --no-root
-
-# Copy UI files and build
-COPY src/ui/ src/ui/
-RUN cd src/ui && npm install && npm run build
+RUN poetry install --no-root 
 
 # Copy Python source code and assets
 COPY src/ src/
+ARG VITE_API_URL
+ENV VITE_API_URL=${VITE_API_URL}
+
+# Create .env file with VITE_API_URL
+RUN echo "VITE_API_URL=${VITE_API_URL}" > /app/src/ui/.env
+
+# Build UI
+RUN cd src/ui && npm install && npm run build
 
 # Expose the port used by FastAPI
 EXPOSE 8000

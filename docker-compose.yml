@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  app:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - VITE_API_URL=http://localhost:8080
+    ports:
+      - "8080:8000"
+    # volumes:
+    #   # - ./src:/app/src
+    #   - ./pyproject.toml:/app/pyproject.toml
+    #   - ./poetry.lock:/app/poetry.lock
+    env_file:
+      - .env
+    environment:
+      - PYTHONPATH=/app
+      - VITE_API_URL=http://localhost:8080
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s

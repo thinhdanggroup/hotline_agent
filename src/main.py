@@ -234,17 +234,18 @@ def get_status(pid: int):
     status = "running" if proc[0].poll() is None else "finished"
     return JSONResponse({"bot_id": pid, "status": status})
 
+
 @app.get("/health")
 def health_check():
     """Health check endpoint for the FastAPI server."""
     return JSONResponse({"status": "ok"})
 
-# Serve static files
-static_dir = "src/ui/dist/assets"
-html_file = "src/ui/dist/index.html"
 
+# Serve static files
 if os.path.exists("src/ui/dist"):
     print("Serving React app")
+    static_dir = "src/ui/dist/assets"
+    html_file = "src/ui/dist/index.html"
     app.mount("/assets", StaticFiles(directory=static_dir), name="static")
 
     @app.get("/")
