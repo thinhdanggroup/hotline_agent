@@ -185,8 +185,8 @@ async def main():
             pipeline,
             PipelineParams(
                 allow_interruptions=True,
-                enable_metrics=True,
-                enable_usage_metrics=True,
+                enable_metrics=False,
+                enable_usage_metrics=False,
                 observers=[rtvi.observer()],
             ),
         )
