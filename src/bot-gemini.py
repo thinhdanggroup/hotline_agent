@@ -136,9 +136,14 @@ async def main():
                 # camera_out_enabled=True,
                 # camera_out_width=1024,
                 # camera_out_height=576,
-                vad_enabled=True,
-                vad_audio_passthrough=True,
-                vad_analyzer=SileroVADAnalyzer(params=VADParams(stop_secs=0.5)),
+                vad_enabled=False,
+                # vad_enabled=True,
+                # vad_audio_passthrough=True,
+                # vad_analyzer=SileroVADAnalyzer(
+                #     params=VADParams(
+                #         stop_secs=0.5,
+                #     ),
+                # ),
             ),
         )
 
@@ -162,7 +167,7 @@ async def main():
         context = OpenAILLMContext(messages)
         context_aggregator = llm.create_context_aggregator(context)
 
-        ta = TalkingAnimation()
+        # ta = TalkingAnimation()
 
         #
         # RTVI events for Pipecat client UI
