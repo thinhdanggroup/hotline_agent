@@ -13,7 +13,7 @@ start-render:
 	@poetry run uvicorn src.main:app --host 0.0.0.0 --port $PORT
 
 build:
-	@cd src/ui && npm run build
+	@cd src/ui && npm install && npm run build
 
 stop:
 	@if [ -f app.pid ]; then \

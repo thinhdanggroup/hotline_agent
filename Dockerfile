@@ -19,6 +19,12 @@ RUN poetry install --no-root
 
 # Copy Python source code and assets
 COPY src/ src/
+COPY script/ script/
+COPY Makefile Makefile
+
+RUN make build
+
+RUN chmod +x script/run.sh
 ARG VITE_API_URL
 ENV VITE_API_URL=${VITE_API_URL}
 
@@ -26,4 +32,4 @@ ENV VITE_API_URL=${VITE_API_URL}
 EXPOSE 8000
 
 # Run the FastAPI application
-CMD ["/app/script/run.sh"]
+CMD ["/bin/bash", "-c", "script/run.sh"]
