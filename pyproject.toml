@@ -15,6 +15,7 @@ python-dotenv = "^1.0.1"
 pipecat-ai = {extras = ["daily", "elevenlabs", "google", "openai", "silero"], version = "^0.0.54"}
 aiohttp = "^3.11.11"
 memory-profiler = "^0.61.0"
+webrtcvad = "^2.0.10"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.4"

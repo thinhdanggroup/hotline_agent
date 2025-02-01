@@ -47,6 +47,8 @@ from pipecat.services.gemini_multimodal_live.gemini import (
 )
 from pipecat.transports.services.daily import DailyParams, DailyTransport
 
+from webrtc_vad_analyzer import WebRTCVADAnalyzer
+
 load_dotenv(override=True)
 
 logger.remove(0)
@@ -138,7 +140,7 @@ async def main():
                 # camera_out_height=576,
                 vad_enabled=True,
                 vad_audio_passthrough=True,
-                vad_analyzer=SileroVADAnalyzer(
+                vad_analyzer=WebRTCVADAnalyzer(
                     params=VADParams(
                         stop_secs=0.5,
                     ),
