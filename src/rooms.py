@@ -62,7 +62,7 @@ def fetch_and_delete():
     
     if not rooms:
         print("No rooms found.")
-        exit()
+        return
         
     print("\nRooms in your account:")
     for idx, room in enumerate(rooms, 1):
