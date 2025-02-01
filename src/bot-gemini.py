@@ -47,6 +47,8 @@ from pipecat.services.gemini_multimodal_live.gemini import (
 )
 from pipecat.transports.services.daily import DailyParams, DailyTransport
 
+from energy_vad_analyzer import EnergyBaseVADAnalyzer
+from utils import read_file
 from webrtc_vad_analyzer import WebRTCVADAnalyzer
 
 load_dotenv(override=True)
@@ -140,11 +142,16 @@ async def main():
                 # camera_out_height=576,
                 vad_enabled=True,
                 vad_audio_passthrough=True,
-                vad_analyzer=WebRTCVADAnalyzer(
+                vad_analyzer=EnergyBaseVADAnalyzer(
                     params=VADParams(
                         stop_secs=0.5,
                     ),
                 ),
+                # vad_analyzer=WebRTCVADAnalyzer(
+                #     params=VADParams(
+                #         stop_secs=0.5,
+                #     ),
+                # ),
                 # vad_analyzer=SileroVADAnalyzer(
                 #     params=VADParams(
                 #         stop_secs=0.5,
@@ -161,11 +168,23 @@ async def main():
             transcribe_model_audio=True,
         )
 
+        system_prompt = read_file(
+            filename="src/prompts/system.txt"
+        )
+        
+        greeting_prompt = read_file(
+            filename="src/prompts/greeting.txt"
+        )
+        
         messages = [
             {
                 "role": "user",
-                "content": "You are Chatbot, a friendly, helpful robot. Your goal is to demonstrate your capabilities in a succinct way. Your output will be converted to audio so don't include special characters in your answers. Respond to what the user said in a creative and helpful way, but keep your responses brief. Start by introducing yourself.",
+                "content": system_prompt,
             },
+            {
+                "role": "user",
+                "content": greeting_prompt,
+            }
         ]
 
         # Set up conversation context and management
