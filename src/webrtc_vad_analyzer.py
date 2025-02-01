@@ -52,12 +52,19 @@ class WebRTCVADAnalyzer(VADAnalyzer):
     def num_frames_required(self) -> int:
         return int(self.sample_rate * self.frame_duration_ms / 1000)
 
+    # def voice_confidence(self, buffer) -> float:
+    #     try:
+    #         audio_int16 = np.frombuffer(buffer, dtype=np.int16)
+    #         audio_float32 = audio_int16.astype(np.float32) / 32768.0
+    #         confidence = self._model(audio_float32, self.sample_rate)[0]
+    #         return confidence
+    #     except Exception as e:
+    #         logger.error(f"Error analyzing audio with WebRTC VAD: {e}")
+    #         return 0.0
+
     def voice_confidence(self, buffer) -> float:
-        try:
-            audio_int16 = np.frombuffer(buffer, dtype=np.int16)
-            audio_float32 = audio_int16.astype(np.float32) / 32768.0
-            confidence = self._model(audio_float32, self.sample_rate)[0]
-            return confidence
-        except Exception as e:
-            logger.error(f"Error analyzing audio with WebRTC VAD: {e}")
-            return 0.0
+        audio_int16 = np.frombuffer(buffer, dtype=np.int16)
+        rms = np.sqrt(np.mean(audio_int16.astype(np.float32) ** 2))
+        threshold = 500  # Adjust based on testing
+        confidence = 1.0 if rms > threshold else 0.0
+        return confidence

@@ -145,6 +145,11 @@ async def main():
                         stop_secs=0.5,
                     ),
                 ),
+                # vad_analyzer=SileroVADAnalyzer(
+                #     params=VADParams(
+                #         stop_secs=0.5,
+                #     ),
+                # ),
             ),
         )
 
