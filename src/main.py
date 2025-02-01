@@ -38,6 +38,8 @@ from pipecat.transports.services.helpers.daily_rest import (
     DailyRoomParams,
 )
 
+from src.rooms import fetch_and_delete
+
 # Load environment variables from .env file
 load_dotenv(override=True)
 
@@ -49,6 +51,9 @@ bot_procs = {}
 
 # Store Daily API helpers
 daily_helpers = {}
+
+if os.getenv("DELETE_ROOMS", "false").lower() == "true":
+    fetch_and_delete()
 
 
 def cleanup():
