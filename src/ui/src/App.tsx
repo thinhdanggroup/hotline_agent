@@ -3,6 +3,7 @@ import { RTVIProvider } from "./providers/RTVIProvider";
 import { ConnectButton } from "./components/ConnectButton";
 import { StatusDisplay } from "./components/StatusDisplay";
 import { DebugDisplay } from "./components/DebugDisplay";
+import { WelcomeContent } from "./components/WelcomeContent";
 import "./App.css";
 
 // function BotVideo() {
@@ -26,12 +27,7 @@ function AppContent() {
         <ConnectButton />
       </div>
 
-      <div className="debug-panel">
-        <p>
-          Due to CPU resource limitations, only audio is enabled and video is
-          disabled on this page.
-        </p>
-      </div>
+      <WelcomeContent />
       {/* <div className="main-content">
         <BotVideo />
       </div> */}
