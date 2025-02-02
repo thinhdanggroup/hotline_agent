@@ -131,6 +131,24 @@ async def end_conversation():
     await global_task.queue_frame(EndFrame())
 
 
+async def update_transcript(room_url, context):
+    # Get conversation record for this room
+    conversations_db = SupabaseInterface[Conversation]("conversations")
+    conversations = await conversations_db.read_all({"room_url": room_url})
+    print(context.get_messages_for_persistent_storage())
+    if conversations:
+        conversation = conversations[0]
+        # Update conversation with transcript and status
+        await conversations_db.update(
+            conversation["id"],
+            {
+                "transcript": context.get_messages_for_persistent_storage(),
+                "status": "ended",
+                "updated_at": serialize_datetime(datetime.now()),
+            },
+        )
+
+
 def get_tool() -> List:
     return [
         {
@@ -297,22 +315,7 @@ async def main():
             print(
                 f"[{function_name}] Function execution started {context} {tool_call_id} {args} {llm}"
             )
-            # Get conversation record for this room
-            conversations_db = SupabaseInterface[Conversation]("conversations")
-            conversations = await conversations_db.read_all({"room_url": room_url})
-            print(context.get_messages_for_persistent_storage())
-            if conversations:
-                conversation = conversations[0]
-                # Update conversation with transcript and status
-                await conversations_db.update(
-                    conversation["id"],
-                    {
-                        "transcript": context.get_messages_for_persistent_storage(),
-                        "status": "ended",
-                        "updated_at": serialize_datetime(datetime.now()),
-                    },
-                )
-
+            await update_transcript(room_url, context)
             await end_conversation()
             await result_callback(f"Conversation ended: {args}")
 
@@ -383,6 +386,7 @@ async def main():
         @transport.event_handler("on_participant_left")
         async def on_participant_left(transport, participant, reason):
             print(f"Participant left: {participant}")
+            await update_transcript(room_url, context)
             await task.queue_frame(EndFrame())
 
         runner = PipelineRunner()
