@@ -80,6 +80,8 @@ talking_frame = SpriteFrame(
     images=sprites
 )  # Animation sequence for when bot is talking
 
+global_task = None
+
 
 class TalkingAnimation(FrameProcessor):
     """Manages the bot's visual animation states.
@@ -112,6 +114,18 @@ class TalkingAnimation(FrameProcessor):
             self._is_talking = False
 
         await self.push_frame(frame, direction)
+
+
+async def end_conversation():
+    global global_task
+    if global_task is None:
+        print(f"Task not found")
+        return
+    print(f"Ending conversation")
+    # End the conversation after a delay
+    await asyncio.sleep(3)
+    
+    await global_task.queue_frame(EndFrame())
 
 
 def get_tool() -> List:
@@ -201,7 +215,7 @@ async def main():
                 # ),
             ),
         )
-        
+
         system_prompt = read_file(filename="src/prompts/system.txt")
 
         # Initialize the Gemini Multimodal Live model
@@ -235,21 +249,18 @@ async def main():
             start_callback=record_user_contact,
         )
 
-        async def end_conversation(function_name, llm, context):
-            print(f"[{function_name}] Function execution callback started {context}")
-
         async def end_conversation_api(
             function_name, tool_call_id, args, llm, context, result_callback
         ):
             print(
                 f"[{function_name}] Function execution started {context} {tool_call_id} {args} {llm}"
             )
+            await end_conversation()
             await result_callback(f"Conversation ended: {args}")
 
         llm.register_function(
             "end_conversation",
             end_conversation_api,
-            start_callback=end_conversation,
         )
 
         greeting_prompt = read_file(filename="src/prompts/greeting.txt")
@@ -302,6 +313,9 @@ async def main():
             ),
         )
         await task.queue_frame(quiet_frame)
+
+        global global_task
+        global_task = task
 
         @rtvi.event_handler("on_client_ready")
         async def on_client_ready(rtvi):
