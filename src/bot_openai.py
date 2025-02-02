@@ -20,12 +20,16 @@ the conversation flow.
 import asyncio
 import os
 import sys
+from datetime import datetime
 
 import aiohttp
 from dotenv import load_dotenv
 from loguru import logger
 from PIL import Image
 from runner import configure
+from src.models import Conversation
+from src.supabase_interface import SupabaseInterface
+from src.helpers.datetime import serialize_datetime
 
 from pipecat.audio.vad.silero import SileroVADAnalyzer
 from pipecat.frames.frames import (
@@ -220,6 +224,17 @@ async def main():
         @transport.event_handler("on_participant_left")
         async def on_participant_left(transport, participant, reason):
             print(f"Participant left: {participant}")
+            # Get conversation record for this room
+            conversations_db = SupabaseInterface[Conversation]("conversations")
+            conversations = await conversations_db.read_all({"room_url": room_url})
+            if conversations:
+                conversation = conversations[0]
+                # Update conversation with transcript and status
+                await conversations_db.update(conversation["id"], {
+                    "transcript": context.get_messages_for_persistent_storage(),
+                    "status": "ended",
+                    "updated_at": serialize_datetime(datetime.now())
+                })
             await task.queue_frame(EndFrame())
 
         runner = PipelineRunner()

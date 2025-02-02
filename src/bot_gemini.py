@@ -127,7 +127,7 @@ async def end_conversation():
     print(f"Ending conversation")
     # End the conversation after a delay
     await asyncio.sleep(3)
-    
+
     await global_task.queue_frame(EndFrame())
 
 
@@ -154,7 +154,7 @@ def get_tool() -> List:
                                 "description": "Summarize the conversation or provide additional context for Admin to follow up.",
                             },
                         },
-                        "required": ["email","notes"],
+                        "required": ["email", "notes"],
                     },
                 },
                 {
@@ -247,31 +247,37 @@ async def main():
             print(
                 f"[{function_name}] Function execution started {context} {tool_call_id} {args} {llm}"
             )
-            
-            try:    
+
+            try:
                 if room_url:
                     # Initialize Supabase interface
                     conversations_db = SupabaseInterface[Conversation]("conversations")
-                    
+
                     # Find the conversation by room_url
-                    conversations = await conversations_db.read_all({"room_url": room_url})
+                    conversations = await conversations_db.read_all(
+                        {"room_url": room_url}
+                    )
                     if conversations:
                         conversation = conversations[0]
-                        
+
                         # Update conversation with contact info in JSONB column
                         update_data = {
                             "updated_at": serialize_datetime(datetime.now()),
                             "contact": {  # Store contact info in JSONB column
                                 "email": args.get("email"),
                                 "phone_number": args.get("phone_number"),
-                                "notes": args.get("notes")
-                            }
+                                "notes": args.get("notes"),
+                            },
                         }
-                        
+
                         await conversations_db.update(conversation["id"], update_data)
-                        await result_callback(f"Contact information recorded successfully")
+                        await result_callback(
+                            f"Contact information recorded successfully"
+                        )
                     else:
-                        await result_callback(f"No active conversation found for this room")
+                        await result_callback(
+                            f"No active conversation found for this room"
+                        )
                 else:
                     await result_callback(f"Could not determine room URL")
             except Exception as e:
@@ -291,6 +297,22 @@ async def main():
             print(
                 f"[{function_name}] Function execution started {context} {tool_call_id} {args} {llm}"
             )
+            # Get conversation record for this room
+            conversations_db = SupabaseInterface[Conversation]("conversations")
+            conversations = await conversations_db.read_all({"room_url": room_url})
+            print(context.get_messages_for_persistent_storage())
+            if conversations:
+                conversation = conversations[0]
+                # Update conversation with transcript and status
+                await conversations_db.update(
+                    conversation["id"],
+                    {
+                        "transcript": context.get_messages_for_persistent_storage(),
+                        "status": "ended",
+                        "updated_at": serialize_datetime(datetime.now()),
+                    },
+                )
+
             await end_conversation()
             await result_callback(f"Conversation ended: {args}")
 

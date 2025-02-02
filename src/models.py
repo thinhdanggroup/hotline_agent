@@ -15,3 +15,4 @@ class Conversation(TypedDict):
     updated_at: Optional[datetime]
     contact: Optional[Contact]  # JSONB column for contact information
     status: str  # 'active' or 'ended'
+    transcript: Optional[Dict]  # JSONB column storing conversation transcript
