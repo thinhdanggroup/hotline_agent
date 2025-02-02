@@ -4,7 +4,6 @@ version = "0.1.0"
 description = "FastAPI application for hotline agent"
 authors = ["Thinh Dang <thinhdang206@gmail.com>"]
 packages = [{include = "src"}]
-readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.11"

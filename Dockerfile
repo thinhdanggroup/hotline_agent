@@ -15,10 +15,11 @@ RUN curl -sSL https://install.python-poetry.org | python3 - \
 
 # Copy Poetry files
 COPY pyproject.toml poetry.lock ./
-RUN poetry install --no-root 
-
 # Copy Python source code and assets
 COPY src/ src/
+
+RUN poetry install --no-root && poetry install
+
 COPY script/ script/
 COPY Makefile Makefile
 
