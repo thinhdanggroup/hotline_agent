@@ -1,8 +1,4 @@
-import {
-  RTVIClientAudio,
-  RTVIClientVideo,
-  useRTVIClientTransportState,
-} from "@pipecat-ai/client-react";
+import { RTVIClientAudio } from "@pipecat-ai/client-react";
 import { RTVIProvider } from "./providers/RTVIProvider";
 import { ConnectButton } from "./components/ConnectButton";
 import { StatusDisplay } from "./components/StatusDisplay";
@@ -42,6 +38,12 @@ function AppContent() {
 
       <DebugDisplay />
       <RTVIClientAudio />
+      
+      <footer className="app-footer">
+        <p className="version-info">
+          Version: {import.meta.env.VITE_GIT_VERSION || 'development'}
+        </p>
+      </footer>
     </div>
   );
 }

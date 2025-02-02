@@ -12,8 +12,21 @@ start-dev:
 start-render:
 	@poetry run uvicorn src.main:app --host 0.0.0.0 --port $PORT
 
-build:
+update-version:
+	@echo "Updating git version..."
+	@echo "VITE_GIT_VERSION=$$(git rev-parse HEAD)" > src/ui/git-version.env
+	@cd src/ui && ln -sf git-version.env .env
+
+build: update-version
 	@cd src/ui && npm install && npm run build
+
+setup-git-hooks:
+	@echo "Setting up git hooks..."
+	@mkdir -p .git/hooks
+	@echo '#!/bin/sh\nmake update-version' > .git/hooks/post-commit
+	@echo '#!/bin/sh\nmake update-version' > .git/hooks/post-merge
+	@chmod +x .git/hooks/post-commit .git/hooks/post-merge
+	@echo "Git hooks installed successfully"
 
 stop:
 	@if [ -f app.pid ]; then \
@@ -28,6 +41,7 @@ stop:
 install:
 	@echo "Installing dependencies..."
 	@poetry install
+	@make setup-git-hooks
 
 clean:
 	@echo "Cleaning up..."

@@ -80,3 +80,17 @@ button:disabled {
   background-color: #f44336;
   color: white;
 }
+
+.app-footer {
+  margin-top: 20px;
+  padding: 10px;
+  background-color: #fff;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.version-info {
+  margin: 0;
+  color: #666;
+  font-size: 0.9em;
+}
