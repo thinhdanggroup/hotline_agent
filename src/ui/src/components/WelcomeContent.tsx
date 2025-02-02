@@ -22,7 +22,7 @@ export function WelcomeContent() {
       </div>
 
       <div className="note-section">
-        <p><strong>Note:</strong> Due to CPU resource limitations, only audio is enabled and video is disabled on this page. For a better demo experience, please contact me via <a href="https://www.linkedin.com/in/thinh-dang/" target="_blank" rel="noopener noreferrer">LinkedIn</a> - I'll be happy to support you!</p>
+        <p><strong>Note:</strong> Due to CPU resource limitations (only 0.1 CPU), you will experience a slight delay in Ethan's responses. For a better demo experience, please contact me via <a href="https://www.linkedin.com/in/thinh-dang/" target="_blank" rel="noopener noreferrer">LinkedIn</a> - I'll be happy to support you!</p>
       </div>
     </div>
   );
