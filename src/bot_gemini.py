@@ -19,10 +19,13 @@ the conversation flow using Gemini's streaming capabilities.
 import asyncio
 import os
 import sys
-from typing import List
+from typing import List, Optional
 from openai.types.chat import ChatCompletionToolParam
-
+from datetime import datetime
 from dotenv import load_dotenv
+from src.helpers.datetime import serialize_datetime
+from src.models import Conversation
+from src.supabase_interface import SupabaseInterface
 from loguru import logger
 from PIL import Image
 from runner import configure
@@ -146,8 +149,12 @@ def get_tool() -> List:
                                 "type": "string",
                                 "description": "The email address to use for contact.",
                             },
+                            "notes": {
+                                "type": "string",
+                                "description": "Summarize the conversation or provide additional context for Admin to follow up.",
+                            },
                         },
-                        "required": ["email"],
+                        "required": ["email","notes"],
                     },
                 },
                 {
@@ -180,7 +187,7 @@ async def main():
     - RTVI event handling
     """
     async with aiohttp.ClientSession() as session:
-        (room_url, token) = await configure(session)
+        (room_url, token, conv_id) = await configure(session)
 
         # Set up Daily transport with specific audio/video parameters for Gemini
         transport = DailyTransport(
@@ -240,7 +247,36 @@ async def main():
             print(
                 f"[{function_name}] Function execution started {context} {tool_call_id} {args} {llm}"
             )
-            await result_callback(f"User contact recorded: {args}")
+            
+            try:    
+                if room_url:
+                    # Initialize Supabase interface
+                    conversations_db = SupabaseInterface[Conversation]("conversations")
+                    
+                    # Find the conversation by room_url
+                    conversations = await conversations_db.read_all({"room_url": room_url})
+                    if conversations:
+                        conversation = conversations[0]
+                        
+                        # Update conversation with contact info in JSONB column
+                        update_data = {
+                            "updated_at": serialize_datetime(datetime.now()),
+                            "contact": {  # Store contact info in JSONB column
+                                "email": args.get("email"),
+                                "phone_number": args.get("phone_number"),
+                                "notes": args.get("notes")
+                            }
+                        }
+                        
+                        await conversations_db.update(conversation["id"], update_data)
+                        await result_callback(f"Contact information recorded successfully")
+                    else:
+                        await result_callback(f"No active conversation found for this room")
+                else:
+                    await result_callback(f"Could not determine room URL")
+            except Exception as e:
+                print(f"Error recording contact: {str(e)}")
+                await result_callback(f"Error recording contact information: {str(e)}")
 
         # Register the function
         llm.register_function(

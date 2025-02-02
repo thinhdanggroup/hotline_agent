@@ -25,8 +25,11 @@ import os
 import subprocess
 from contextlib import asynccontextmanager
 from typing import Any, Dict
-
+from datetime import datetime
+import uuid
 import aiohttp
+from src.models import Conversation
+from src.supabase_interface import SupabaseInterface
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -40,6 +43,7 @@ from pipecat.transports.services.helpers.daily_rest import (
 
 from src.rooms import fetch_and_delete
 from src.utils import ROOT_DIR
+from src.helpers.datetime import serialize_datetime
 
 # Load environment variables from .env file
 load_dotenv(override=True)
@@ -52,6 +56,9 @@ bot_procs = {}
 
 # Store Daily API helpers
 daily_helpers = {}
+
+# Initialize Supabase interface for conversations
+conversations_db = SupabaseInterface[Conversation]("conversations")
 
 if os.getenv("DELETE_ROOMS", "false").lower() == "true":
     fetch_and_delete()
@@ -193,6 +200,17 @@ async def rtvi_connect(request: Request) -> Dict[Any, Any]:
     """
     print("Creating room for RTVI connection")
     room_url, token = await create_room_and_token()
+    
+    # Create a new conversation record
+    conversation_id = str(uuid.uuid4())
+    conversation = {
+        "id": conversation_id,
+        "room_url": room_url,
+        "created_at": serialize_datetime(datetime.now()),
+        "contact": None,  # Initialize empty JSONB contact field
+        "status": "active"
+    }
+    await conversations_db.create(conversation)
     print(f"Room URL: {room_url}")
 
     # Start the bot process

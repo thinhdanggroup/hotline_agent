@@ -25,11 +25,19 @@ async def configure(aiohttp_session: aiohttp.ClientSession):
         required=False,
         help="Daily API Key (needed to create an owner token for the room)",
     )
+    parser.add_argument(
+        "-i",
+        "--conversation-id",
+        type=str,
+        required=False,
+        help="Conversation ID (needed to create a conversation token for the room)",
+    )
 
     args, unknown = parser.parse_known_args()
 
     url = args.url or os.getenv("DAILY_SAMPLE_ROOM_URL")
     key = args.apikey or os.getenv("DAILY_API_KEY")
+    conv_id = args.conversation_id or os.getenv("AGENT_CONVERSATION_ID")
 
     if not url:
         raise Exception(
@@ -53,4 +61,4 @@ async def configure(aiohttp_session: aiohttp.ClientSession):
 
     token = await daily_rest_helper.get_token(url, expiry_time)
 
-    return (url, token)
+    return (url, token, conv_id)
