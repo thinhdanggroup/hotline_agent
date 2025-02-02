@@ -17,7 +17,7 @@ update-version:
 	@echo "VITE_GIT_VERSION=$$(git rev-parse HEAD)" > src/ui/git-version.env
 	@cd src/ui && ln -sf git-version.env .env
 
-build: update-version
+build:
 	@cd src/ui && npm install && npm run build
 
 setup-git-hooks:
