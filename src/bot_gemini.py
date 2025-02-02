@@ -304,10 +304,6 @@ async def main():
         messages = [
             {
                 "role": "user",
-                "content": system_prompt,
-            },
-            {
-                "role": "user",
                 "content": greeting_prompt,
             },
         ]

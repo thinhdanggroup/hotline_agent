@@ -22,8 +22,10 @@ Requirements:
 
 import argparse
 import os
+from pathlib import Path
 import subprocess
 from contextlib import asynccontextmanager
+import sys
 from typing import Any, Dict
 from datetime import datetime
 import uuid
@@ -63,6 +65,9 @@ conversations_db = SupabaseInterface[Conversation]("conversations")
 if os.getenv("DELETE_ROOMS", "false").lower() == "true":
     fetch_and_delete()
 
+
+# Precompute paths during startup
+VENV_PYTHON = Path(sys.executable)
 
 def cleanup():
     """Cleanup function to terminate all bot processes.
@@ -171,11 +176,22 @@ async def start_agent(request: Request):
     # Spawn a new bot process
     try:
         bot_file = get_bot_file()
+        # proc = subprocess.Popen(
+        #     [
+        #         f"poetry run python {bot_file} -u {room_url} -t {token}",
+        #     ],
+        #     shell=True,
+        #     bufsize=1,
+        #     cwd=ROOT_DIR,
+        # )
         proc = subprocess.Popen(
             [
-                f"poetry run python {bot_file} -u {room_url} -t {token}",
+                str(VENV_PYTHON),  # Use precomputed Python path
+                bot_file,          # Use precomputed bot file path
+                "-u", room_url,
+                "-t", token
             ],
-            shell=True,
+            shell=False,  # Safer and faster without shell
             bufsize=1,
             cwd=ROOT_DIR,
         )
@@ -216,11 +232,22 @@ async def rtvi_connect(request: Request) -> Dict[Any, Any]:
     # Start the bot process
     try:
         bot_file = get_bot_file()
+        # proc = subprocess.Popen(
+        #     [
+        #         f"poetry run python {bot_file} -u {room_url} -t {token}"
+        #     ],
+        #     shell=True,
+        #     bufsize=1,
+        #     cwd=ROOT_DIR,
+        # )
         proc = subprocess.Popen(
             [
-                f"poetry run python {bot_file} -u {room_url} -t {token}"
+                str(VENV_PYTHON),
+                bot_file,
+                "-u", room_url,
+                "-t", token
             ],
-            shell=True,
+            shell=False,
             bufsize=1,
             cwd=ROOT_DIR,
         )
