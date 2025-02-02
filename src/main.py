@@ -39,6 +39,7 @@ from pipecat.transports.services.helpers.daily_rest import (
 )
 
 from src.rooms import fetch_and_delete
+from src.utils import ROOT_DIR
 
 # Load environment variables from .env file
 load_dotenv(override=True)
@@ -76,7 +77,7 @@ def get_bot_file():
         raise ValueError(
             f"Invalid BOT_IMPLEMENTATION: {bot_implementation}. Must be 'openai' or 'gemini'"
         )
-    return f"bot-{bot_implementation}"
+    return f"src/bot_{bot_implementation}".replace("-", "_") + ".py"
 
 
 @asynccontextmanager
@@ -165,11 +166,11 @@ async def start_agent(request: Request):
         bot_file = get_bot_file()
         proc = subprocess.Popen(
             [
-                f"poetry run python -m {bot_file} -u {room_url} -t {token}",
+                f"poetry run python {bot_file} -u {room_url} -t {token}",
             ],
             shell=True,
             bufsize=1,
-            cwd=os.path.dirname(os.path.abspath(__file__)),
+            cwd=ROOT_DIR,
         )
         bot_procs[proc.pid] = (proc, room_url)
     except Exception as e:
@@ -199,11 +200,11 @@ async def rtvi_connect(request: Request) -> Dict[Any, Any]:
         bot_file = get_bot_file()
         proc = subprocess.Popen(
             [
-                f"poetry run python -m {bot_file} -u {room_url} -t {token}"
+                f"poetry run python {bot_file} -u {room_url} -t {token}"
             ],
             shell=True,
             bufsize=1,
-            cwd=os.path.dirname(os.path.abspath(__file__)),
+            cwd=ROOT_DIR,
         )
         bot_procs[proc.pid] = (proc, room_url)
     except Exception as e:

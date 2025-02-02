@@ -19,7 +19,8 @@ the conversation flow using Gemini's streaming capabilities.
 import asyncio
 import os
 import sys
-
+from typing import List
+from openai.types.chat import ChatCompletionToolParam
 
 from dotenv import load_dotenv
 from loguru import logger
@@ -113,6 +114,47 @@ class TalkingAnimation(FrameProcessor):
         await self.push_frame(frame, direction)
 
 
+def get_tool() -> List:
+    return [
+        {
+            "function_declarations": [
+                {
+                    "name": "record_user_contact",
+                    "description": "Record user contact information if user provides email or phone number.",
+                    "parameters": {
+                        "type": "object",
+                        "properties": {
+                            "phone_number": {
+                                "type": "string",
+                                "description": "The phone number to use for contact.",
+                            },
+                            "email": {
+                                "type": "string",
+                                "description": "The email address to use for contact.",
+                            },
+                        },
+                        "required": ["email"],
+                    },
+                },
+                {
+                    "name": "end_conversation",
+                    "description": "End the conversation with the user if you think it's complete.",
+                    "parameters": {
+                        "type": "object",
+                        "properties": {
+                            "end": {
+                                "type": "boolean",
+                                "description": "True to end the conversation.",
+                            }
+                        },
+                        "required": ["end"],
+                    },
+                },
+            ]
+        }
+    ]
+
+
 async def main():
     """Main bot execution function.
 
@@ -159,6 +201,8 @@ async def main():
                 # ),
             ),
         )
+        
+        system_prompt = read_file(filename="src/prompts/system.txt")
 
         # Initialize the Gemini Multimodal Live model
         llm = GeminiMultimodalLiveLLMService(
@@ -166,16 +210,50 @@ async def main():
             voice_id="Puck",  # Aoede, Charon, Fenrir, Kore, Puck
             transcribe_user_audio=True,
             transcribe_model_audio=True,
+            # model="gemini-1.5-flash-latest",
+            system_instruction=system_prompt,
+            tools=get_tool(),
         )
 
-        system_prompt = read_file(
-            filename="src/prompts/system.txt"
+        # Optional start callback - called when function execution begins
+        async def record_user_contact(function_name, llm, context):
+            print(f"[{function_name}] Function execution callback started {context}")
+
+        # Main function handler - called to execute the function
+        async def record_user_contact_api(
+            function_name, tool_call_id, args, llm, context, result_callback
+        ):
+            print(
+                f"[{function_name}] Function execution started {context} {tool_call_id} {args} {llm}"
+            )
+            await result_callback(f"User contact recorded: {args}")
+
+        # Register the function
+        llm.register_function(
+            "record_user_contact",
+            record_user_contact_api,
+            start_callback=record_user_contact,
         )
-        
-        greeting_prompt = read_file(
-            filename="src/prompts/greeting.txt"
+
+        async def end_conversation(function_name, llm, context):
+            print(f"[{function_name}] Function execution callback started {context}")
+
+        async def end_conversation_api(
+            function_name, tool_call_id, args, llm, context, result_callback
+        ):
+            print(
+                f"[{function_name}] Function execution started {context} {tool_call_id} {args} {llm}"
+            )
+            await result_callback(f"Conversation ended: {args}")
+
+        llm.register_function(
+            "end_conversation",
+            end_conversation_api,
+            start_callback=end_conversation,
         )
-        
+
+        greeting_prompt = read_file(filename="src/prompts/greeting.txt")
+
         messages = [
             {
                 "role": "user",
@@ -184,12 +262,15 @@ async def main():
             {
                 "role": "user",
                 "content": greeting_prompt,
-            }
+            },
         ]
 
         # Set up conversation context and management
         # The context_aggregator will automatically collect conversation context
-        context = OpenAILLMContext(messages)
+        context = OpenAILLMContext(
+            messages=messages,
+            tools=get_tool(),
+        )
         context_aggregator = llm.create_context_aggregator(context)
 
         # ta = TalkingAnimation()
@@ -215,8 +296,8 @@ async def main():
             pipeline,
             PipelineParams(
                 allow_interruptions=True,
-                enable_metrics=False,
-                enable_usage_metrics=False,
+                enable_metrics=True,
+                enable_usage_metrics=True,
                 observers=[rtvi.observer()],
             ),
         )

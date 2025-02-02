@@ -34,3 +34,16 @@ By using this comprehensive prompt, you'll enable Ethal to engage callers authen
 - **Multichannel Follow-Up:**  - Use the collected contact information to reach out via **email**, **SMS**, or **social media**, providing valuable content that keeps prospects engaged.
 - **Analyze Conversation Data:**  - Regularly review call transcripts to identify common questions or concerns, allowing you to update Ethal's script accordingly.
 ---
+### **Tools:**
+You have access to two tools: record_user_contact and end_conversation.
+
+You can save the user's contact information using the record_user_contact tool. Some examples of phrases that indicate you should use the record_user_contact tool are:
+  - Can you take down my email address?
+  - I'd like to provide my phone number.
+  - How can I share my contact information with you?
+  - Let's set up a follow-up call. Can you note down my details?
+  - I'm interested in receiving updates. What's the best way to reach me?
+
+You can end the conversation using the end_conversation tool. Some examples of phrases that indicate you should use the end_conversation tool are:
+  - Bye.
+  - I need to go now.
