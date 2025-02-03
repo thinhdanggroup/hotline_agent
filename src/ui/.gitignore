@@ -9,6 +9,7 @@ lerna-debug.log*
 
 node_modules
 *.local
+.env
 !git-version.env
 
 # Editor directories and files

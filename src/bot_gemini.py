@@ -204,6 +204,28 @@ async def main():
     - Animation processing
     - RTVI event handling
     """
+    vad_engine = os.getenv("AMD_ENGINE", "")
+    if vad_engine == "SileroVADAnalyzer":
+        vad_analyzer = SileroVADAnalyzer(
+            params=VADParams(
+                stop_secs=0.5,
+            ),
+        )
+
+    elif vad_engine == "WebRTCVADAnalyzer":
+        vad_analyzer = WebRTCVADAnalyzer(
+            params=VADParams(
+                stop_secs=0.5,
+            ),
+        )
+    else:
+        vad_analyzer = EnergyBaseVADAnalyzer(
+            params=VADParams(
+                stop_secs=0.5,
+            ),
+        )
+    print(f"Using VAD Analyzer: {vad_analyzer}")
+
     async with aiohttp.ClientSession() as session:
         (room_url, token, conv_id) = await configure(session)
 
@@ -223,21 +245,7 @@ async def main():
                 # camera_out_height=576,
                 vad_enabled=True,
                 vad_audio_passthrough=True,
-                vad_analyzer=EnergyBaseVADAnalyzer(
-                    params=VADParams(
-                        stop_secs=0.5,
-                    ),
-                ),
-                # vad_analyzer=WebRTCVADAnalyzer(
-                #     params=VADParams(
-                #         stop_secs=0.5,
-                #     ),
-                # ),
-                # vad_analyzer=SileroVADAnalyzer(
-                #     params=VADParams(
-                #         stop_secs=0.5,
-                #     ),
-                # ),
+                vad_analyzer=vad_analyzer,
             ),
         )
 
